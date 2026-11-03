@@ -95,6 +95,9 @@ void main() {
     final before = shell.controller.operations!.products.first.units;
     GoRouter.of(t.element(find.byType(AdminShell))).go('/admin/stock');
     await t.pumpAndSettle();
+    await t.scrollUntilVisible(find.text('Pomada mate'), 250,
+      scrollable: find.byType(Scrollable).first);
+    await t.pumpAndSettle();
     await t.ensureVisible(find.text('Ajustar stock').first);
     await t.tap(find.text('Ajustar stock').first);
     await t.pumpAndSettle();
