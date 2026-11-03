@@ -67,13 +67,21 @@ class WebController extends ChangeNotifier {
       if (demo) {
         await adminStore.load();
         operations!.clients = adminStore.clients;
+        await gateway.initialize();
+        if (const bool.fromEnvironment('DESIGN_PREVIEW')) {
+          adminAllowed = true;
+          await gateway.signIn('', '');
+        }
+        catalog = await gateway.catalog();
+      } else {
+        // The public catalogue does not depend on OAuth provider settings.
+        await Future.wait<void>([
+          gateway.initialize(),
+          gateway.catalog().then((value) {
+            catalog = value;
+          }),
+        ]);
       }
-      await gateway.initialize();
-      if (demo && const bool.fromEnvironment('DESIGN_PREVIEW')) {
-        adminAllowed = true;
-        await gateway.signIn('', '');
-      }
-      catalog = await gateway.catalog();
       await refreshIdentity();
       if (!demo) {
         _auth = Supabase.instance.client.auth.onAuthStateChange.listen((event) {

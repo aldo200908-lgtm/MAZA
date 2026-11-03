@@ -33,8 +33,32 @@
 
   <title>MAZA · Tu día, en orden</title>
   <link rel="manifest" href="manifest.json">
+  <link rel="preload" href="main.dart.js" as="script">
+  <style>
+    body { margin: 0; background: #faf9f6; color: #222620; }
+    #maza-loading {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-content: center;
+      gap: .5rem;
+      text-align: center;
+      font-family: system-ui, sans-serif;
+    }
+    #maza-loading strong { font-size: 2rem; }
+    #maza-loading span { font-size: .875rem; }
+  </style>
 </head>
 <body>
+  <div id="maza-loading" role="status">
+    <strong>MAZA</strong>
+    <span>Cargando…</span>
+  </div>
+  <script>
+    window.addEventListener('flutter-first-frame', () => {
+      document.getElementById('maza-loading')?.remove();
+    }, { once: true });
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
