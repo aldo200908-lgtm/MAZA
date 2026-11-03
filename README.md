@@ -140,6 +140,6 @@ En `/MAZA/demo/` se abre el panel sin login, exclusivamente con datos ficticios.
 
 Pendiente de validación personal: contraseña del administrador, recepción de correos externos y catálogo/dirección definitivos. No se debe anunciar la puesta en producción completa hasta cerrar esas comprobaciones. No hay pasarela bancaria, facturación electrónica, control de devolución de garantías ni recordatorios enviados. Una solicitud pública queda por confirmar hasta que el administrador registra la venta o reserva.
 
-## Inicio con Facebook
+## Inicio con Google
 
-Integración preparada en `lib/web/facebook_auth.dart`, con botón condicionado al proveedor habilitado en Supabase y retorno a la reserva elegida. Requiere configurar la app de Meta y sus credenciales en Supabase; no hay secretos de Meta en el frontend. Instrucciones: [Activar Facebook](docs/entrega/facebook.md). El acceso social conserva los permisos existentes y no concede administración.
+El acceso con Google usa Supabase Auth y el proveedor configurado en Google Cloud. El botón aparece al comprobar el proveedor habilitado en Supabase; se conserva el regreso a la reserva elegida. El frontend no guarda secretos de Google. Configuración y validación: [Google en MAZA](docs/entrega/google.md). El acceso por correo sigue disponible y el login social no concede administración.

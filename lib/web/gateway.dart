@@ -6,13 +6,13 @@ import '../features/admin/design_store.dart';
 import '../core/models.dart';
 import '../core/store.dart';
 import 'catalog.dart';
-import 'facebook_auth.dart';
+import 'google_auth.dart';
 
 abstract interface class CustomerGateway {
   bool get hasSession;
-  bool get facebookEnabled;
+  bool get googleEnabled;
   String? get oauthReturnTo;
-  Future<void> signInWithFacebook(String destination);
+  Future<void> signInWithGoogle(String destination);
   Future<void> initialize();
   Future<void> signIn(String email, String password);
   Future<String?> register(String email, String password);
@@ -52,12 +52,12 @@ class DemoCustomerGateway implements CustomerGateway {
   final AppStore store;
   final DesignOperations operations;
   @override
-  bool get facebookEnabled => false;
+  bool get googleEnabled => false;
   @override
   String? get oauthReturnTo => null;
   @override
-  Future<void> signInWithFacebook(String destination) async =>
-      throw const DomainError('Facebook no se conecta en la demostración.');
+  Future<void> signInWithGoogle(String destination) async =>
+      throw const DomainError('Google no se conecta en la demostración.');
   late SharedPreferences prefs;
   bool _signedIn = false;
   static const customerId = '30000000-0000-4000-8000-000000000001';
@@ -306,21 +306,21 @@ class DemoCustomerGateway implements CustomerGateway {
 }
 
 class SupabaseCustomerGateway implements CustomerGateway {
-  SupabaseCustomerGateway(this.client, {FacebookAuth? facebookAuth})
-    : facebook = facebookAuth ?? FacebookAuth.forClient(client);
-  final FacebookAuth facebook;
+  SupabaseCustomerGateway(this.client, {GoogleAuth? googleAuth})
+    : google = googleAuth ?? GoogleAuth.forClient(client);
+  final GoogleAuth google;
   @override
-  bool get facebookEnabled => facebook.enabled;
+  bool get googleEnabled => google.enabled;
   @override
-  String? get oauthReturnTo => facebook.returnTo;
+  String? get oauthReturnTo => google.returnTo;
   @override
-  Future<void> signInWithFacebook(String destination) =>
-      facebook.signIn(destination);
+  Future<void> signInWithGoogle(String destination) =>
+      google.signIn(destination);
   final SupabaseClient client;
   @override
   bool get hasSession => client.auth.currentSession != null;
   @override
-  Future<void> initialize() => facebook.initialize();
+  Future<void> initialize() => google.initialize();
   @override
   Future<void> signIn(String email, String password) async {
     await client.auth.signInWithPassword(

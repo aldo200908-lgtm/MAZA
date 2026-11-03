@@ -4,34 +4,34 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:maza/core/models.dart';
-import 'package:maza/web/facebook_auth.dart';
+import 'package:maza/web/google_auth.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
-  FacebookAuth service({required bool enabled, FacebookLauncher? launcher}) =>
-      FacebookAuth(
+  GoogleAuth service({required bool enabled, GoogleLauncher? launcher}) =>
+      GoogleAuth(
         settingsUri: Uri.parse('https://example.supabase.co/auth/v1/settings'),
         publishableKey: 'public-test-key',
         redirectTo: 'https://example.test/MAZA/',
         httpClient: MockClient(
           (r) async => http.Response(
             jsonEncode({
-              'external': {'facebook': enabled},
+              'external': {'google': enabled},
             }),
             200,
           ),
         ),
         launch: launcher ?? ((redirect) async => true),
       );
-  test('no ofrece Facebook si el proveedor está desactivado', () async {
+  test('no ofrece Google si el proveedor está desactivado', () async {
     final auth = service(enabled: false);
     await auth.initialize();
     expect(auth.enabled, isFalse);
     await expectLater(auth.signIn('/admin'), throwsA(isA<DomainError>()));
   });
   test(
-    'usa el retorno fijo y conserva el servicio elegido al volver de Facebook',
+    'usa el retorno fijo y conserva el servicio elegido al volver de Google',
     () async {
       String? redirect;
       final auth = service(
@@ -53,7 +53,7 @@ void main() {
     },
   );
   test(
-    'rechaza retornos externos y borra el intento si no abre Facebook',
+    'rechaza retornos externos y borra el intento si no abre Google',
     () async {
       final auth = service(enabled: true, launcher: (_) async => false);
       await auth.initialize();
@@ -75,7 +75,7 @@ void main() {
   test(
     'si falla la consulta de proveedores no bloquea el acceso por correo',
     () async {
-      final auth = FacebookAuth(
+      final auth = GoogleAuth(
         settingsUri: Uri.parse('https://example.test/settings'),
         publishableKey: 'public-test-key',
         redirectTo: 'https://example.test/',

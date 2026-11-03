@@ -5,36 +5,36 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../core/models.dart';
 import 'paths.dart';
 
-typedef FacebookLauncher = Future<bool> Function(String redirectTo);
+typedef GoogleLauncher = Future<bool> Function(String redirectTo);
 
-/// No contiene secretos de Meta. El proveedor se configura únicamente en Supabase.
-class FacebookAuth {
-  FacebookAuth({
+/// No contiene secretos de Google. El proveedor se configura únicamente en Supabase.
+class GoogleAuth {
+  GoogleAuth({
     required this.settingsUri,
     required this.publishableKey,
     required this.redirectTo,
     required this.launch,
     this.httpClient,
   });
-  factory FacebookAuth.forClient(SupabaseClient client) => FacebookAuth(
+  factory GoogleAuth.forClient(SupabaseClient client) => GoogleAuth(
     settingsUri: Uri.parse(
       '${const String.fromEnvironment('SUPABASE_URL')}/auth/v1/settings',
     ),
     publishableKey: const String.fromEnvironment('SUPABASE_ANON_KEY'),
     redirectTo: const String.fromEnvironment('AUTH_REDIRECT_URL'),
     launch: (redirect) => client.auth.signInWithOAuth(
-      OAuthProvider.facebook,
+      OAuthProvider.google,
       redirectTo: redirect,
-      scopes: 'email',
+      scopes: 'openid email profile',
     ),
   );
   final Uri settingsUri;
   final String publishableKey, redirectTo;
-  final FacebookLauncher launch;
+  final GoogleLauncher launch;
   final http.Client? httpClient;
   bool enabled = false;
   String? returnTo;
-  static const _pending = 'maza.web.facebook.pending';
+  static const _pending = 'maza.web.google.pending';
 
   Future<void> initialize() async {
     enabled = false;
@@ -66,7 +66,7 @@ class FacebookAuth {
           .timeout(const Duration(seconds: 4));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
-        enabled = (data['external'] as Map?)?['facebook'] == true;
+        enabled = (data['external'] as Map?)?['google'] == true;
       }
     } catch (_) {
       enabled = false;
@@ -78,7 +78,7 @@ class FacebookAuth {
   Future<void> signIn(String destination) async {
     if (!enabled) {
       throw const DomainError(
-        'El acceso con Facebook todavía no está habilitado. Puedes ingresar con tu correo.',
+        'El acceso con Google todavía no está habilitado. Puedes ingresar con tu correo.',
       );
     }
     final prefs = await SharedPreferences.getInstance();
@@ -92,7 +92,7 @@ class FacebookAuth {
     try {
       if (!await launch(redirectTo)) {
         throw const DomainError(
-          'No se pudo abrir Facebook. Inténtalo de nuevo o ingresa con tu correo.',
+          'No se pudo abrir Google. Inténtalo de nuevo o ingresa con tu correo.',
         );
       }
       // Abrir el proveedor no significa que haya una sesión: la valida Supabase al volver.

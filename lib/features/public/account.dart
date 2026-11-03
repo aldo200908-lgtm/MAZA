@@ -76,14 +76,14 @@ class _WebAccessState extends State<WebAccess> {
     }
   }
 
-  Future<void> _facebook() async {
+  Future<void> _google() async {
     setState(() {
       busy = true;
       error = null;
       message = null;
     });
     try {
-      await widget.controller.loginWithFacebook(
+      await widget.controller.loginWithGoogle(
         safeDestination(
           widget.returnTo,
           fallback: widget.admin ? '/admin' : '/mi-cuenta',
@@ -165,16 +165,12 @@ class _WebAccessState extends State<WebAccess> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (widget.controller.gateway.facebookEnabled) ...[
+                if (widget.controller.gateway.googleEnabled) ...[
                   SizedBox(
                     width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: busy ? null : _facebook,
-                      icon: const Icon(
-                        Icons.facebook,
-                        color: Color(0xFF1877F2),
-                      ),
-                      label: const Text('Continuar con Facebook'),
+                    child: OutlinedButton(
+                      onPressed: busy ? null : _google,
+                      child: const Text('Continuar con Google'),
                     ),
                   ),
                   const SizedBox(height: 16),

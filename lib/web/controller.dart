@@ -213,8 +213,8 @@ class WebController extends ChangeNotifier {
     _publish();
   }
 
-  Future<void> loginWithFacebook(String destination) =>
-      gateway.signInWithFacebook(destination);
+  Future<void> loginWithGoogle(String destination) =>
+      gateway.signInWithGoogle(destination);
   String? get oauthReturnTo => gateway.oauthReturnTo;
 
   Future<void> login(String email, String password) async {

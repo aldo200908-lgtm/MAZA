@@ -8,14 +8,14 @@ import 'package:maza/features/public/account.dart';
 import 'package:maza/web/controller.dart';
 import 'package:maza/web/gateway.dart';
 
-class FacebookGateway extends DemoCustomerGateway {
-  FacebookGateway(super.store, {required this.active});
+class GoogleGateway extends DemoCustomerGateway {
+  GoogleGateway(super.store, {required this.active});
   final bool active;
   String? destination;
   @override
-  bool get facebookEnabled => active;
+  bool get googleEnabled => active;
   @override
-  Future<void> signInWithFacebook(String next) async {
+  Future<void> signInWithGoogle(String next) async {
     destination = next;
   }
 }
@@ -23,14 +23,14 @@ class FacebookGateway extends DemoCustomerGateway {
 void main() {
   for (final enabled in [true, false]) {
     testWidgets(
-      'Facebook ${enabled ? 'habilitado' : 'deshabilitado'} conserva el acceso por correo',
+      'Google ${enabled ? 'habilitado' : 'deshabilitado'} conserva el acceso por correo',
       (t) async {
         t.view.physicalSize = const Size(360, 800);
         t.view.devicePixelRatio = 1;
         addTearDown(t.view.resetPhysicalSize);
         addTearDown(t.view.resetDevicePixelRatio);
         final store = AppStore(DemoRepository());
-        final gateway = FacebookGateway(store, active: enabled);
+        final gateway = GoogleGateway(store, active: enabled);
         final c = WebController(
           demo: false,
           store: store,
@@ -49,11 +49,11 @@ void main() {
         await t.pumpAndSettle();
         expect(find.text('Correo electrónico'), findsOneWidget);
         expect(
-          find.text('Continuar con Facebook'),
+          find.text('Continuar con Google'),
           enabled ? findsOneWidget : findsNothing,
         );
         if (enabled) {
-          await t.tap(find.text('Continuar con Facebook'));
+          await t.tap(find.text('Continuar con Google'));
           await t.pumpAndSettle();
           expect(gateway.destination, '/barberia/reservar?servicio=corte');
           // No valida ni exige contraseña del formulario de correo.
