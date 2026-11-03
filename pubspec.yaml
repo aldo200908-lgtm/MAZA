@@ -1,0 +1,32 @@
+name: maza
+description: MAZA — agenda y barbería. Demo navegable para un administrador.
+publish_to: none
+version: 1.0.0+1
+environment:
+  sdk: '>=3.9.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: 1.0.8
+  supabase_flutter: 2.8.4
+  shared_preferences: ^2.5.3
+  uuid: ^4.5.1
+  intl: ^0.20.2
+dev_dependencies:
+  http: ^1.5.0
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+flutter:
+  uses-material-design: true
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Roboto-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Roboto-Black.ttf
+          weight: 900

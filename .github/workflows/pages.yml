@@ -1,0 +1,68 @@
+name: Publicar demo MAZA
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Verificar y compilar Flutter
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pages: read
+    env:
+      CI: 'true'
+      FLUTTER_SUPPRESS_ANALYTICS: 'true'
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v6
+      - name: Configurar Pages
+        id: pages
+        uses: actions/configure-pages@v5
+      - name: Instalar Flutter 3.35.7
+        run: |
+          git clone --depth 1 --branch 3.35.7 https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+      - name: Resolver dependencias
+        run: flutter pub get --enforce-lockfile
+      - name: Analizar código
+        run: flutter analyze
+      - name: Probar módulos
+        run: flutter test
+      - name: Compilar demo web
+        env:
+          PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: >-
+          flutter build web --release --no-web-resources-cdn
+          --base-href "${PAGES_BASE_PATH}/"
+          --dart-define=DEMO_MODE=true
+      - name: Preparar artefacto web
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: build/web
+
+  deploy:
+    name: Publicar en GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Desplegar
+        id: deployment
+        uses: actions/deploy-pages@v4

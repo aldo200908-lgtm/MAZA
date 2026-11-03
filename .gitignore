@@ -1,0 +1,13 @@
+.dart_tool/
+.packages
+build/
+.flutter-plugins*
+.env
+.env.*
+!.env.example
+config/supabase.json
+android/local.properties
+android/.gradle/
+*.iml
+.idea/
+node_modules/
