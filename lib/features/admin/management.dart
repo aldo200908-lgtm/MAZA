@@ -6,6 +6,7 @@ import '../../core/widgets.dart';
 import '../../web/catalog.dart';
 import '../../web/components.dart';
 import '../../web/controller.dart';
+import 'design_pages.dart';
 
 class ManagementPage extends StatelessWidget {
   const ManagementPage({super.key});
@@ -43,9 +44,21 @@ class ManagementPage extends StatelessWidget {
         ),
         (
           'Pagos',
-          'Estado del módulo de cobros',
+          'Abonos, saldos y métodos',
           Icons.account_balance_wallet_outlined,
           '/admin/pagos',
+        ),
+        (
+          'Reportes',
+          'Actividad, saldos y productos por reponer',
+          Icons.bar_chart_outlined,
+          '/admin/reportes',
+        ),
+        (
+          'Avisos',
+          'Pendientes y recordatorios del negocio',
+          Icons.notifications_none,
+          '/admin/avisos',
         ),
         (
           'Configuración',
@@ -89,6 +102,7 @@ class AdminCatalog extends StatelessWidget {
   final bool rentals;
   @override
   Widget build(BuildContext context) {
+    if (controller.demo) return StudioInventory(controller: controller, rentals: rentals);
     final items = rentals
         ? controller.catalog!.rentals
         : controller.catalog!.products;
@@ -239,7 +253,7 @@ class BusinessSettings extends StatefulWidget {
 
 class _BusinessSettingsState extends State<BusinessSettings> {
   late final TextEditingController name, address, policy;
-  bool busy = false;
+  bool busy = false, reminders = true, approval = false;
   String? error;
   @override
   void initState() {
@@ -287,6 +301,24 @@ class _BusinessSettingsState extends State<BusinessSettings> {
           labelText: 'Condiciones de reserva y solicitudes',
         ),
       ),
+      if (widget.controller.demo) ...[
+        const SectionTitle('Preferencias de ejemplo'),
+        Surface(padding: EdgeInsets.zero, child: Column(children: [
+          SwitchListTile.adaptive(title: const Text('Recordatorios de citas'),
+            subtitle: const Text('Vista previa de la preferencia; no envía mensajes.'),
+            value: reminders, onChanged: (v) => setState(() => reminders = v)),
+          const Divider(height: 1),
+          SwitchListTile.adaptive(title: const Text('Revisar nuevas reservas'),
+            subtitle: const Text('Así se vería la confirmación manual.'),
+            value: approval, onChanged: (v) => setState(() => approval = v)),
+        ])),
+        const SizedBox(height: 16),
+        const Surface(child: Row(children: [
+          Icon(Icons.schedule, color: orange), SizedBox(width: 12),
+          Expanded(child: Text('Zona horaria: Perú · UTC−05\nMoneda: soles (PEN)',
+            style: TextStyle(color: muted, height: 1.7))),
+        ])),
+      ],
       if (error != null)
         Padding(
           padding: const EdgeInsets.only(top: 12),

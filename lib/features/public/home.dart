@@ -18,6 +18,8 @@ class PublicHome extends StatelessWidget {
         retry: () => controller.start(),
       );
     }
+    final nextVisit = controller.appointments.where((a) =>
+      a.status.blocks && a.start.isAfter(DateTime.now().toUtc())).firstOrNull;
     return WebPage(
       children: [
         Padding(
@@ -32,6 +34,18 @@ class PublicHome extends StatelessWidget {
             ),
           ),
         ),
+        if (controller.customer != null && nextVisit != null) Padding(
+          padding: const EdgeInsets.only(bottom: 18),
+          child: Surface(color: const Color(0xFFE8EDDF), child: Row(children: [
+            const Icon(Icons.event_available_outlined, color: orange), const SizedBox(width: 12),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text('Tu próxima visita', style: TextStyle(fontWeight: FontWeight.w800)),
+              Text(nextVisit.serviceName + ' · ' + dayLabel(peruWall(nextVisit.start)) +
+                ' · ' + hm(peruWall(nextVisit.start)), style: const TextStyle(fontSize: 12, color: muted)),
+            ])),
+            IconButton(tooltip: 'Ver mis citas', onPressed: () => context.go('/mi-cuenta/citas'),
+              icon: const Icon(Icons.arrow_forward, size: 20)),
+          ]))),
         Container(
           padding: EdgeInsets.all(
             MediaQuery.sizeOf(context).width < 650 ? 25 : 40,

@@ -45,6 +45,19 @@ class _ShopPageState extends State<ShopPage> {
               ? 'Por los días que necesitas. Consulta fechas y coordina la entrega.'
               : 'Cuida tu corte y tu barba, también después de salir de la silla.',
         ),
+        Surface(color: widget.rentals ? const Color(0xFFE8EDDF) : const Color(0xFFF4E4D9),
+          child: Row(children: [
+            Icon(widget.rentals ? Icons.event_available_outlined : Icons.shopping_bag_outlined, color: orange),
+            const SizedBox(width: 14),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(widget.rentals ? 'Elige tus fechas. Planea con calma.' : 'El cuidado no termina con el corte.',
+                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+              const SizedBox(height: 6),
+              Text(widget.rentals ? 'Tarifa por día y garantía visibles en cada equipo.' : 'Productos para tu rutina, con precio en soles.',
+                style: const TextStyle(color: muted, fontSize: 12)),
+            ])),
+          ])),
+        const SizedBox(height: 22),
         TextField(
           decoration: InputDecoration(
             labelText: widget.rentals ? 'Buscar equipo' : 'Buscar producto',

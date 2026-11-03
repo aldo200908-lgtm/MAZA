@@ -62,18 +62,24 @@ class BarberLanding extends StatelessWidget {
           ),
         ),
         const SectionTitle('Manos que conocen el oficio'),
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: c.barbers
-              .map(
-                (b) => Chip(
-                  avatar: const Icon(Icons.person_outline, size: 18),
-                  label: Text(b.name),
-                ),
-              )
-              .toList(),
-        ),
+        ...c.barbers.map((b) => Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Surface(child: Row(children: [
+            CircleAvatar(radius: 26, backgroundColor: ink,
+              child: Text(b.name.substring(0, 1), style: const TextStyle(
+                color: paper, fontSize: 24, fontWeight: FontWeight.w800))),
+            const SizedBox(width: 16),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(b.name, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 5),
+              Text(b.weekdays.map((d) => weekdaysEs[d - 1]).join(' · '),
+                style: const TextStyle(color: muted, fontSize: 11)),
+              Text(minuteLabel(b.openMinute) + ' a ' + minuteLabel(b.closeMinute),
+                style: const TextStyle(color: muted, fontSize: 12)),
+            ])),
+            const Icon(Icons.verified_outlined, color: orange, size: 22),
+          ])),
+        )),
         const SizedBox(height: 24),
         Text(c.business.address, style: const TextStyle(color: muted)),
         const SizedBox(height: 8),

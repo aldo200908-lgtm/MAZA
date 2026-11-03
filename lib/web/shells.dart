@@ -72,6 +72,10 @@ class PublicShell extends StatelessWidget {
               ),
             ),
           if (controller.demo)
+            IconButton(tooltip: 'Ir al panel de administración',
+              onPressed: () => context.go('/admin'),
+              icon: const Icon(Icons.dashboard_outlined, size: 22)),
+          if (controller.demo)
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
@@ -131,6 +135,8 @@ class AdminShell extends StatelessWidget {
       'Stock',
       'Alquileres',
       'Pagos',
+      'Reportes',
+      'Avisos',
       'Configuración',
     ];
     const routes = [
@@ -141,6 +147,8 @@ class AdminShell extends StatelessWidget {
       '/admin/stock',
       '/admin/alquileres',
       '/admin/pagos',
+      '/admin/reportes',
+      '/admin/avisos',
       '/admin/configuracion',
     ];
     const icons = [
@@ -151,6 +159,8 @@ class AdminShell extends StatelessWidget {
       Icons.inventory_2_outlined,
       Icons.key_outlined,
       Icons.account_balance_wallet_outlined,
+      Icons.bar_chart_outlined,
+      Icons.notifications_none,
       Icons.tune,
     ];
     return Scaffold(
@@ -175,6 +185,10 @@ class AdminShell extends StatelessWidget {
           ],
         ),
         actions: [
+          if (controller.demo) IconButton(
+            tooltip: 'Avisos del negocio',
+            onPressed: () => context.go('/admin/avisos'),
+            icon: const Icon(Icons.notifications_none, size: 21)),
           IconButton(
             tooltip: 'Ver web pública',
             onPressed: () => context.go('/'),

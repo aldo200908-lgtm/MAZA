@@ -7,12 +7,14 @@ import '../../core/widgets.dart';
 import '../../web/components.dart';
 import '../../web/controller.dart';
 import '../appointments/appointment_editor.dart';
+import 'design_pages.dart';
 
 class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key, required this.controller});
   final WebController controller;
   @override
   Widget build(BuildContext context) {
+    if (controller.demo) return StudioOverview(controller: controller);
     final store = controller.adminStore;
     final today = store.forDay(peruNow());
     final pending = today

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../core/clock.dart';
+import '../features/admin/design_store.dart';
 import '../core/models.dart';
 import '../core/store.dart';
 import 'catalog.dart';
@@ -42,8 +43,10 @@ abstract interface class CustomerGateway {
 }
 
 class DemoCustomerGateway implements CustomerGateway {
-  DemoCustomerGateway(this.store);
+  DemoCustomerGateway(this.store, {DesignOperations? operations})
+      : operations = operations ?? DesignOperations();
   final AppStore store;
+  final DesignOperations operations;
   late SharedPreferences prefs;
   bool _signedIn = false;
   static const customerId = '30000000-0000-4000-8000-000000000001';
@@ -78,8 +81,8 @@ class DemoCustomerGateway implements CustomerGateway {
     return PublicCatalog(
       services: store.services.where((x) => x.active).toList(),
       barbers: store.barbers.where((x) => x.active).toList(),
-      products: demoProducts,
-      rentals: demoRentals,
+      products: operations.products,
+      rentals: operations.rentalItems,
       business: raw == null
           ? const BusinessInfo()
           : BusinessInfo.fromJson(jsonDecode(raw)),

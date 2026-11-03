@@ -5,6 +5,7 @@ import '../core/models.dart';
 import '../core/store.dart';
 import '../data/demo_repository.dart';
 import '../data/supabase_repository.dart';
+import '../features/admin/design_store.dart';
 import 'catalog.dart';
 import 'gateway.dart';
 
@@ -21,14 +22,17 @@ class WebController extends ChangeNotifier {
               ? DemoRepository()
               : SupabaseRepository(Supabase.instance.client),
         );
+    operations = demo ? DesignOperations() : null;
+    operations?.addListener(_operationsChanged);
     gateway =
         customerGateway ??
         (demo
-            ? DemoCustomerGateway(adminStore)
+            ? DemoCustomerGateway(adminStore, operations: operations)
             : SupabaseCustomerGateway(Supabase.instance.client));
     adminStore.addListener(_dataChanged);
   }
   final bool demo;
+  late final DesignOperations? operations;
   late final AppStore adminStore;
   late final CustomerGateway gateway;
   PublicCatalog? catalog;
@@ -56,6 +60,10 @@ class WebController extends ChangeNotifier {
     try {
       if (demo) await adminStore.load();
       await gateway.initialize();
+      if (demo && const bool.fromEnvironment('DESIGN_PREVIEW')) {
+        adminAllowed = true;
+        await gateway.signIn('', '');
+      }
       catalog = await gateway.catalog();
       await refreshIdentity();
       if (!demo) {
@@ -140,6 +148,15 @@ class WebController extends ChangeNotifier {
         _publish();
       }
     }
+  }
+
+  void _operationsChanged() {
+    final old = catalog;
+    if (old == null || _disposed || operations == null) return;
+    catalog = PublicCatalog(services: old.services, barbers: old.barbers,
+      products: operations!.products, rentals: operations!.rentalItems,
+      business: old.business);
+    _publish();
   }
 
   void _dataChanged() {
@@ -300,6 +317,8 @@ class WebController extends ChangeNotifier {
   void dispose() {
     _disposed = true;
     _auth?.cancel();
+    operations?.removeListener(_operationsChanged);
+    operations?.dispose();
     adminStore.removeListener(_dataChanged);
     adminStore.dispose();
     super.dispose();

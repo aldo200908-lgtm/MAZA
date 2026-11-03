@@ -4,7 +4,7 @@ Web Flutter con dos caras independientes: clientes y administración. Esta entre
 
 Web: https://aldo200908-lgtm.github.io/MAZA/
 
-La publicación usa el proyecto Supabase MAZA. Las credenciales públicas de compilación están en `config/supabase.web.json`; no contiene contraseñas ni claves secretas. La confirmación de correo y la activación del propietario se describen en `docs/supabase-setup.md`. El catálogo conectado empieza vacío; los seeds de demostración no se ejecutan en producción.
+La publicación actual es una demo visual sin login, por petición del usuario. Se compila con DEMO_MODE=true y DESIGN_PREVIEW=true. El proyecto Supabase ya preparado conserva sus permisos y datos; su integración se retoma al final. La configuración pública sigue en `config/supabase.web.json`, sin contraseñas ni claves secretas.
 
 ## Área pública
 
@@ -123,3 +123,11 @@ La prueba SQL usa PostgreSQL embebido/PGlite y un `auth` mínimo, sin credencial
 GitHub Actions verifica análisis y pruebas, compila solo web y despliega en Pages desde `main`. No hay creación de APK, pasarela de pago ni publicación en tiendas. El directorio Android anterior se conserva como antecedente de v1 y está fuera del alcance de esta entrega.
 
 El build conserva las fuentes completas de iconos (`--no-tree-shake-icons`) para evitar un fallo del optimizador de iconos de este SDK con el nuevo bundle. No cambia el comportamiento de la web.
+
+## Demo visual sin login
+
+La publicación principal abre tanto la web pública como el panel con datos ficticios, usando DEMO_MODE=true y DESIGN_PREVIEW=true. No inicializa Supabase ni permite acceso a cuentas reales. La app móvil queda fuera del alcance.
+
+Incluye inventario con edición y movimientos, reservas/entregas/devoluciones de equipos, abonos simulados, filtros, detalles, reportes y avisos. Los cambios de esos módulos viven en la sesión de la demo y vuelven al ejemplo al recargar. Las citas y el perfil mantienen la persistencia de ejemplo anterior. No hay cobros reales, contratos oficiales ni envío de recordatorios.
+
+El trabajo pendiente de autenticación se retoma al final. La configuración de Supabase y su base de datos se conservan para esa fase.

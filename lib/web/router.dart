@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../core/widgets.dart';
 import '../features/admin/dashboard.dart';
+import '../features/admin/design_pages.dart';
 import '../features/admin/management.dart';
 import '../features/appointments/appointments_screen.dart';
 import '../features/auth/login_screen.dart';
@@ -305,7 +306,19 @@ GoRouter createWebRouter(WebController c, {String? initialLocation}) {
               ),
               GoRoute(
                 path: '/admin/pagos',
-                builder: (ctx, s) => page(() => const AdminPayments()),
+                builder: (ctx, s) => page(() => c.demo ? StudioPayments(controller: c) : const AdminPayments()),
+              ),
+              GoRoute(
+                path: '/admin/reportes',
+                builder: (ctx, s) => page(() => c.demo
+                  ? StudioReports(controller: c)
+                  : const WebPage(children: [Intro('Reportes', 'Disponible en la vista de diseño.')])),
+              ),
+              GoRoute(
+                path: '/admin/avisos',
+                builder: (ctx, s) => page(() => c.demo
+                  ? StudioNotices(controller: c)
+                  : const WebPage(children: [Intro('Avisos', 'No hay avisos por ahora.')])),
               ),
               GoRoute(
                 path: '/admin/configuracion',

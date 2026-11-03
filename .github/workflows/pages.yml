@@ -44,13 +44,15 @@ jobs:
         run: |
           npm ci
           npm run check:sql
-      - name: Compilar web conectada
+      - name: Probar acceso de diseño sin login
+        run: flutter test test/design_preview_test.dart --dart-define=DESIGN_PREVIEW=true
+      - name: Compilar MAZA visual sin Supabase
         env:
           PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
         run: >-
           flutter build web --release --no-web-resources-cdn --no-tree-shake-icons
           --base-href "${PAGES_BASE_PATH}/"
-          --dart-define-from-file=config/supabase.web.json
+          --dart-define=DEMO_MODE=true --dart-define=DESIGN_PREVIEW=true
       - name: Preparar artefacto web
         uses: actions/upload-pages-artifact@v4
         with:

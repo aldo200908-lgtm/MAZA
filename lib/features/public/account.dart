@@ -336,6 +336,15 @@ class _AccountPageState extends State<AccountPage> {
               style: TextStyle(fontSize: 12, color: muted),
             ),
           ),
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          ActionChip(avatar: const Icon(Icons.event_outlined, size: 17), label: const Text('Mis visitas'),
+            onPressed: () => context.go('/mi-cuenta/citas')),
+          ActionChip(avatar: const Icon(Icons.shopping_bag_outlined, size: 17), label: const Text('Mis solicitudes'),
+            onPressed: () => context.go('/mi-cuenta/solicitudes')),
+          ActionChip(avatar: const Icon(Icons.person_outline, size: 17), label: const Text('Mi cuenta'),
+            onPressed: () => context.go('/mi-cuenta')),
+        ]),
+        const SizedBox(height: 20),
         if (widget.returnTo != null && p != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
