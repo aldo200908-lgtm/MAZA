@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app.dart';
 import 'core/theme.dart';
+import 'web/paths.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   const demo = bool.fromEnvironment('DEMO_MODE', defaultValue: true);
   const url = String.fromEnvironment('SUPABASE_URL');
   const key = String.fromEnvironment('SUPABASE_ANON_KEY');
+  final callback = demo ? null : authCallbackDestination(Uri.base);
   try {
     if (!demo) {
       if (url.isEmpty || key.isEmpty) {
@@ -17,7 +19,7 @@ Future<void> main() async {
       }
       await Supabase.initialize(url: url, anonKey: key);
     }
-    runApp(const MazaApp(demo: demo));
+    runApp(MazaApp(demo: demo, initialLocation: callback));
   } catch (e) {
     runApp(
       MaterialApp(

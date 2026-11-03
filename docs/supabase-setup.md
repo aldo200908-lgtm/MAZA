@@ -34,3 +34,7 @@ Las tablas públicas tienen RLS. Se comprueba que anon no puede leer clientes ni
 Los advisors señalan los endpoints RPC `SECURITY DEFINER` por su ejecución intencional: se revisaron los permisos explícitos, el `search_path` fijo y los filtros. Esos avisos no equivalen a tablas abiertas. Referencias: [RPC público](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable) y [RPC autenticado](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable).
 
 La comprobación del correo real, inicio de sesión y reserva completa con una cuenta real requiere que su titular complete el registro; las pruebas no simulan haber recibido ese correo.
+
+## Retorno desde el correo
+
+Supabase termina de procesar el callback antes de crear la aplicación. MAZA reconoce el fragmento de sesión, los códigos PKCE y los errores de enlace y entrega al router una ruta interna limpia. La recuperación abre su formulario; el retorno normal consulta la identidad y envía al administrador al panel, al cliente a su cuenta o a acceso si no hay sesión válida. Los parámetros de URL nunca conceden permisos. Las rutas desconocidas normales siguen mostrando 404.

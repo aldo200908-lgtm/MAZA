@@ -30,11 +30,23 @@ GoRouter createWebRouter(WebController c, {String? initialLocation}) {
   return GoRouter(
     navigatorKey: root,
     initialLocation: initialLocation,
+    overridePlatformDefaultLocation: initialLocation != null,
     refreshListenable: c,
     redirect: (context, state) {
+      final callback = authCallbackDestination(state.uri);
+      if (callback != null) return callback;
       if (c.loading) return null;
       final path = state.uri.path;
       if (c.recovering && path != '/recuperar') return '/recuperar';
+      if (path == '/auth/retorno') {
+        if (c.identityLoading) return null;
+        return c.adminAllowed
+            ? '/admin'
+            : c.signedIn
+            ? '/mi-cuenta'
+            : '/acceso';
+      }
+      if (path == '/recuperar' && !c.signedIn) return '/acceso';
       final adminPath = path == '/admin' || path.startsWith('/admin/');
       if (adminPath && path != '/admin/acceso' && !c.adminAllowed) {
         return Uri(
@@ -77,6 +89,10 @@ GoRouter createWebRouter(WebController c, {String? initialLocation}) {
       ),
     ),
     routes: [
+      GoRoute(
+        path: '/auth/retorno',
+        builder: (ctx, s) => page(() => const SizedBox.shrink()),
+      ),
       GoRoute(
         path: '/acceso',
         builder: (ctx, s) =>

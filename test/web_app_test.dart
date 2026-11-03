@@ -17,6 +17,63 @@ void main() {
       '/barberia/reservar?servicio=abc',
     );
   });
+  test('normaliza callbacks reales sin tratar las rutas públicas como tokens', () {
+    expect(
+      authCallbackDestination(Uri.parse(
+        'https://example.test/MAZA/#access_token=example&refresh_token=example&type=signup',
+      )),
+      '/auth/retorno',
+    );
+    expect(
+      authCallbackDestination(Uri.parse(
+        'https://example.test/MAZA/?code=example',
+      )),
+      '/auth/retorno',
+    );
+    expect(
+      authCallbackDestination(Uri.parse(
+        'https://example.test/MAZA/#access_token=example&type=recovery',
+      )),
+      '/recuperar',
+    );
+    expect(
+      authCallbackDestination(Uri.parse(
+        'https://example.test/MAZA/#error=access_denied&error_code=otp_expired',
+      )),
+      '/acceso',
+    );
+    expect(
+      authCallbackDestination(Uri.parse('https://example.test/MAZA/#/productos')),
+      isNull,
+    );
+  });
+  testWidgets('el fragmento de confirmación vuelve al acceso sin sesión', (
+    t,
+  ) async {
+    await t.pumpWidget(
+      const MazaApp(
+        demo: true,
+        initialLocation:
+            '/access_token=example-only&refresh_token=example-only&type=signup',
+      ),
+    );
+    await t.pumpAndSettle();
+    expect(find.text('Esta página no existe.'), findsNothing);
+    expect(find.text('Cuenta de ejemplo'), findsOneWidget);
+  });
+  testWidgets('un error del enlace de correo abre acceso en lugar de 404', (
+    t,
+  ) async {
+    await t.pumpWidget(
+      const MazaApp(
+        demo: true,
+        initialLocation: '/error=access_denied&error_description=expired',
+      ),
+    );
+    await t.pumpAndSettle();
+    expect(find.text('Esta página no existe.'), findsNothing);
+    expect(find.text('Cuenta de ejemplo'), findsOneWidget);
+  });
   testWidgets('acceso directo a admin exige entrada independiente', (t) async {
     await t.pumpWidget(const MazaApp(demo: true, initialLocation: '/admin'));
     await t.pumpAndSettle();
