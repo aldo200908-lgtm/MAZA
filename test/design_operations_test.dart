@@ -71,6 +71,8 @@ void main() {
     addTearDown(t.platformDispatcher.clearTextScaleFactorTestValue);
     await t.pumpWidget(const MazaApp(demo: true, initialLocation: '/admin/acceso'));
     await t.pumpAndSettle();
+    await t.ensureVisible(find.text('Abrir panel de demostración'));
+    await t.pumpAndSettle();
     await t.tap(find.text('Abrir panel de demostración'));
     await t.pumpAndSettle();
     expect(t.takeException(), isNull);
@@ -84,6 +86,8 @@ void main() {
   });
   testWidgets('ajustar stock abre un formulario utilizable y actualiza unidades', (t) async {
     await t.pumpWidget(const MazaApp(demo: true, initialLocation: '/admin/acceso'));
+    await t.pumpAndSettle();
+    await t.ensureVisible(find.text('Abrir panel de demostración'));
     await t.pumpAndSettle();
     await t.tap(find.text('Abrir panel de demostración'));
     await t.pumpAndSettle();
