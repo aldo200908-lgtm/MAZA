@@ -89,7 +89,7 @@ class StudioOverview extends StatelessWidget {
     final upcoming = appointments.where((a) =>
       [AppointmentStatus.pending, AppointmentStatus.confirmed].contains(a.status)).toList();
     return AnimatedBuilder(animation: ops, builder: (ctx, _) => WebPage(children: [
-      Intro('Tu negocio, en orden.', dayLabel(peruNow()) + ' · Una mirada a lo que sigue.',
+      Intro('Tu negocio, en orden.', '${dayLabel(peruNow())} · Una mirada a lo que sigue.',
         action: FilledButton.icon(onPressed: () => showAppointmentEditor(context, store),
           icon: const Icon(Icons.add, size: 19), label: const Text('Nueva cita'))),
       const DemoNotice(),
@@ -106,7 +106,7 @@ class StudioOverview extends StatelessWidget {
           fontWeight: FontWeight.w800, letterSpacing: -.7)),
         const SizedBox(height: 10),
         Text(upcoming.isEmpty ? 'Tu agenda está al día. Puedes preparar los próximos turnos.'
-          : 'Tienes ' + upcoming.length.toString() + ' turnos por atender. Revisa la agenda y confirma lo pendiente.',
+          : 'Tienes ${upcoming.length} turnos por atender. Revisa la agenda y confirma lo pendiente.',
           style: const TextStyle(color: Colors.white70, height: 1.6)),
         const SizedBox(height: 16),
         Wrap(spacing: 10, runSpacing: 8, children: [
@@ -120,13 +120,13 @@ class StudioOverview extends StatelessWidget {
         tooltip: 'Ver avisos', onPressed: () => context.go('/admin/avisos'),
         icon: const Icon(Icons.notifications_none))),
       Surface(padding: EdgeInsets.zero, child: Column(children: [
-        _attention(context, Icons.inventory_2_outlined, ops.lowStock.toString() + ' productos con pocas unidades',
+        _attention(context, Icons.inventory_2_outlined, '${ops.lowStock} productos con pocas unidades',
           'Revisa existencias y registra una entrada.', '/admin/stock'),
         const Divider(height: 1),
         _attention(context, Icons.event_repeat_outlined, 'Una devolución por coordinar',
           'Consulta fechas, garantías y entrega de equipos.', '/admin/alquileres'),
         const Divider(height: 1),
-        _attention(context, Icons.payments_outlined, soles(ops.outstanding) + ' por cobrar en el ejemplo',
+        _attention(context, Icons.payments_outlined, '${soles(ops.outstanding)} por cobrar en el ejemplo',
           'Distingue los abonos del saldo pendiente.', '/admin/pagos'),
       ])),
       SectionTitle('Próximas citas', trailing: TextButton(
@@ -225,11 +225,11 @@ class _StudioInventoryState extends State<StudioInventory> {
               Text(soles(item.priceCents) + (rental ? ' / día' : ' por unidad'),
                 style: const TextStyle(color: muted)),
               const SizedBox(height: 12),
-              StudioBadge(rental ? 'Consultar fechas' : item.units.toString() + ' en stock',
+              StudioBadge(rental ? 'Consultar fechas' : '${item.units} en stock',
                 warning: !rental && item.units <= 3),
               if (rental) ...[
                 const SizedBox(height: 8),
-                Text('Garantía: ' + soles(item.depositCents), style: const TextStyle(fontSize: 12, color: muted)),
+                Text('Garantía: ${soles(item.depositCents)}', style: const TextStyle(fontSize: 12, color: muted)),
               ],
               const SizedBox(height: 14),
               Wrap(spacing: 6, runSpacing: 6, children: [
@@ -285,11 +285,11 @@ class _StudioInventoryState extends State<StudioInventory> {
       Row(children: [
         const Icon(Icons.date_range_outlined, size: 18, color: orange),
         const SizedBox(width: 8),
-        Expanded(child: Text(dayLabel(r.start) + ' → ' + dayLabel(r.end),
+        Expanded(child: Text('${dayLabel(r.start)} → ${dayLabel(r.end)}',
           style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13))),
       ]),
       const Divider(height: 28),
-      Text('Alquiler ' + soles(r.amount) + ' · Garantía ' + soles(r.deposit),
+      Text('Alquiler ${soles(r.amount)} · Garantía ${soles(r.deposit)}',
         style: const TextStyle(fontSize: 12, color: muted)),
       if (r.status == 'Reservado' || r.status == 'Entregado') ...[
         const SizedBox(height: 12),
@@ -313,17 +313,17 @@ class _StudioInventoryState extends State<StudioInventory> {
   Widget _requests(BuildContext context) {
     final requests = widget.controller.managementRequests.where((r) =>
       r.kind == (widget.rentals ? 'rental' : 'product')).toList();
-    if (requests.isEmpty) return EmptyState(
+    if (requests.isEmpty) { return EmptyState(
       title: 'Tu bandeja está al día', message: 'Las solicitudes de la web aparecerán aquí.',
       icon: Icons.mark_email_read_outlined,
       action: TextButton(onPressed: () => context.go(widget.rentals ? '/alquileres' : '/productos'),
-        child: const Text('Explorar como cliente')));
+        child: const Text('Explorar como cliente'))); }
     return Column(children: requests.map((r) => Padding(padding: const EdgeInsets.only(bottom: 12),
       child: Surface(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         StudioBadge(r.label), const SizedBox(height: 12),
         Text(r.itemName, style: Theme.of(context).textTheme.titleLarge),
         Text(widget.controller.adminStore.clientName(r.clientId)),
-        Text(r.quantity.toString() + ' unidad(es) · ' + soles(r.amountCents),
+        Text('${r.quantity} unidad(es) · ${soles(r.amountCents)}',
           style: const TextStyle(color: muted)),
         if (r.status == 'pending') ...[const SizedBox(height: 12),
           OutlinedButton(onPressed: () => guarded(context,
@@ -411,12 +411,11 @@ Future<void> _chargeDetails(BuildContext context, ChargeDemo c) => showModalBott
       const Divider(height: 36),
       Text(c.client, style: Theme.of(ctx).textTheme.titleLarge), Text(c.detail),
       const SizedBox(height: 16),
-      Text('Total: ' + soles(c.total)), Text('Abonado: ' + soles(c.paid)),
-      Text('Saldo: ' + soles(c.balance)), Text('Método: ' + (c.method.isEmpty ? 'Sin abonos' : c.method)),
+      Text('Total: ${soles(c.total)}'), Text('Abonado: ${soles(c.paid)}'),
+      Text('Saldo: ${soles(c.balance)}'), Text('Método: ${c.method.isEmpty ? 'Sin abonos' : c.method}'),
       const SizedBox(height: 24),
       OutlinedButton.icon(onPressed: () async {
-        await Clipboard.setData(ClipboardData(text: 'MAZA · EJEMPLO\n' + c.id + '\n' +
-          c.client + '\n' + c.detail + '\nAbonado: ' + soles(c.paid) + '\nSaldo: ' + soles(c.balance)));
+        await Clipboard.setData(ClipboardData(text: 'MAZA · EJEMPLO\n${c.id}\n${c.client}\n${c.detail}\nAbonado: ${soles(c.paid)}\nSaldo: ${soles(c.balance)}'));
         if (ctx.mounted) notify(ctx, 'Resumen de ejemplo copiado.');
       }, icon: const Icon(Icons.copy_outlined), label: const Text('Copiar resumen')),
       TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cerrar')),
@@ -458,7 +457,7 @@ class StudioReports extends StatelessWidget {
         const SizedBox(height: 14),
         ...ops.products.where((p) => p.units <= 3).map((p) => Padding(
           padding: const EdgeInsets.symmetric(vertical: 8), child: Row(children: [
-            Expanded(child: Text(p.name)), StudioBadge(p.units.toString() + ' uds.', warning: true),
+            Expanded(child: Text(p.name)), StudioBadge('${p.units} uds.', warning: true),
           ]))),
         const SizedBox(height: 14),
         OutlinedButton(onPressed: () => context.go('/admin/stock'), child: const Text('Revisar inventario')),
@@ -469,7 +468,7 @@ class StudioReports extends StatelessWidget {
           const Icon(Icons.content_cut, color: orange), const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(s.name, style: const TextStyle(fontWeight: FontWeight.w700)),
-            Text(s.minutes.toString() + ' minutos', style: const TextStyle(color: muted, fontSize: 12)),
+            Text('${s.minutes} minutos', style: const TextStyle(color: muted, fontSize: 12)),
           ])), Text(soles(s.priceCents), style: const TextStyle(fontWeight: FontWeight.w800)),
         ])))),
     ]));
@@ -487,9 +486,9 @@ class StudioNotices extends StatelessWidget {
           icon: const Icon(Icons.done_all), label: Text(ops.notificationsRead ? 'Todo revisado' : 'Marcar como revisados'))),
       const DemoNotice(),
       _links(context, [
-        ('Reponer inventario', ops.lowStock.toString() + ' productos con pocas unidades', Icons.inventory_2_outlined, '/admin/stock'),
+        ('Reponer inventario', '${ops.lowStock} productos con pocas unidades', Icons.inventory_2_outlined, '/admin/stock'),
         ('Coordinar una devolución', 'Revisa el equipo entregado y su garantía', Icons.key_outlined, '/admin/alquileres'),
-        ('Consultar saldos', soles(ops.outstanding) + ' pendientes en la simulación', Icons.payments_outlined, '/admin/pagos'),
+        ('Consultar saldos', '${soles(ops.outstanding)} pendientes en la simulación', Icons.payments_outlined, '/admin/pagos'),
         ('Preparar la siguiente visita', 'Consulta los turnos y el historial del cliente', Icons.calendar_month_outlined, '/admin/citas'),
       ]),
     ]));
@@ -601,9 +600,9 @@ class _StudioFormState extends State<_StudioForm> {
         if (kind == 'stock') ...[
           Text(widget.item!.name, style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 6),
-          Text(widget.item!.units.toString() + ' unidades disponibles', style: const TextStyle(color: muted)),
+          Text('${widget.item!.units} unidades disponibles', style: const TextStyle(color: muted)),
           const SizedBox(height: 16),
-          DropdownButtonFormField<String>(value: movement, decoration: const InputDecoration(labelText: 'Movimiento'),
+          DropdownButtonFormField<String>(initialValue: movement, decoration: const InputDecoration(labelText: 'Movimiento'),
             items: ['Entrada', 'Salida'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
             onChanged: (v) => setState(() => movement = v!)),
           const SizedBox(height: 14),
@@ -611,7 +610,7 @@ class _StudioFormState extends State<_StudioForm> {
           _text(detail, 'Motivo del movimiento'),
         ],
         if (kind == 'rental') ...[
-          DropdownButtonFormField<String>(value: asset, isExpanded: true,
+          DropdownButtonFormField<String>(initialValue: asset, isExpanded: true,
             decoration: const InputDecoration(labelText: 'Equipo'),
             items: widget.ops.rentalItems.map((i) => DropdownMenuItem(value: i.id,
               child: Text(i.name, overflow: TextOverflow.ellipsis))).toList(),
@@ -625,24 +624,24 @@ class _StudioFormState extends State<_StudioForm> {
               lastDate: DateTime(now.year + 1), helpText: 'Fechas del alquiler');
             if (chosen != null && mounted) setState(() => range = chosen);
           }, icon: const Icon(Icons.date_range),
-            label: Text(dayLabel(range.start) + ' → ' + dayLabel(range.end))),
+            label: Text('${dayLabel(range.start)} → ${dayLabel(range.end)}')),
           const SizedBox(height: 16),
           Surface(color: _sage, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(range.duration.inDays.toString() + ' día(s) · ' + soles(item.priceCents) + ' por día'),
+            Text('${range.duration.inDays} día(s) · ${soles(item.priceCents)} por día'),
             const SizedBox(height: 8),
-            Text('Total: ' + soles(item.priceCents * range.duration.inDays),
+            Text('Total: ${soles(item.priceCents * range.duration.inDays)}',
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
-            Text('Garantía aparte: ' + soles(item.depositCents), style: const TextStyle(fontSize: 12, color: muted)),
+            Text('Garantía aparte: ${soles(item.depositCents)}', style: const TextStyle(fontSize: 12, color: muted)),
           ])),
         ],
         if (kind == 'payment') ...[
           Text(widget.charge!.client, style: Theme.of(context).textTheme.titleLarge),
           Text(widget.charge!.detail, style: const TextStyle(color: muted)),
           const SizedBox(height: 14),
-          Text('Saldo: ' + soles(widget.charge!.balance), style: const TextStyle(fontWeight: FontWeight.w800)),
+          Text('Saldo: ${soles(widget.charge!.balance)}', style: const TextStyle(fontWeight: FontWeight.w800)),
           const SizedBox(height: 18),
           _text(price, 'Importe del abono (S/)', numeric: true),
-          DropdownButtonFormField<String>(value: method,
+          DropdownButtonFormField<String>(initialValue: method,
             decoration: const InputDecoration(labelText: 'Método de ejemplo'),
             items: ['Efectivo', 'Yape', 'Plin', 'Transferencia'].map((s) =>
               DropdownMenuItem(value: s, child: Text(s))).toList(),

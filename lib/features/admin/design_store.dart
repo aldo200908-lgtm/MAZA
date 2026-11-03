@@ -60,7 +60,7 @@ class DesignOperations extends ChangeNotifier {
     }
     final list = rental ? rentalItems : products;
     final item = original == null
-      ? ShopItem(id: 'visual-' + nextId, name: name.trim(), description: description,
+      ? ShopItem(id: 'visual-$nextId', name: name.trim(), description: description,
           priceCents: price, kind: rental ? 'rental' : 'product', category: category,
           units: rental ? 1 : units, depositCents: deposit)
       : _copy(original, name: name.trim(), price: price, category: category,
@@ -98,10 +98,10 @@ class DesignOperations extends ChangeNotifier {
       throw const DomainError('El equipo ya tiene una reserva para esas fechas.');
     }
     final amount = item.priceCents * end.difference(start).inDays;
-    final id = 'AL-' + nextId;
+    final id = 'AL-$nextId';
     rentals.insert(0, RentalDemo(id, client.trim(), item.id, item.name, start, end,
         amount, item.depositCents, 'Reservado'));
-    charges.insert(0, ChargeDemo('CB-' + nextId, client.trim(), id + ' · ' + item.name,
+    charges.insert(0, ChargeDemo('CB-$nextId', client.trim(), '$id · ${item.name}',
         amount, 0, '', 'Alquileres'));
     notifyListeners();
   }
@@ -110,7 +110,7 @@ class DesignOperations extends ChangeNotifier {
         (rental.status == 'Entregado' && status == 'Devuelto')) {
       rental.status = status;
       if (status == 'Cancelado') {
-        charges.removeWhere((c) => c.detail.startsWith(rental.id + ' · ') && c.paid == 0);
+        charges.removeWhere((c) => c.detail.startsWith('${rental.id} · ') && c.paid == 0);
       }
       notifyListeners();
     }

@@ -74,7 +74,7 @@ class BarberLanding extends StatelessWidget {
               const SizedBox(height: 5),
               Text(b.weekdays.map((d) => weekdaysEs[d - 1]).join(' · '),
                 style: const TextStyle(color: muted, fontSize: 11)),
-              Text(minuteLabel(b.openMinute) + ' a ' + minuteLabel(b.closeMinute),
+              Text('${minuteLabel(b.openMinute)} a ${minuteLabel(b.closeMinute)}',
                 style: const TextStyle(color: muted, fontSize: 12)),
             ])),
             const Icon(Icons.verified_outlined, color: orange, size: 22),

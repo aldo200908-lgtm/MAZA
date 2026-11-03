@@ -40,8 +40,7 @@ class PublicHome extends StatelessWidget {
             const Icon(Icons.event_available_outlined, color: orange), const SizedBox(width: 12),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               const Text('Tu próxima visita', style: TextStyle(fontWeight: FontWeight.w800)),
-              Text(nextVisit.serviceName + ' · ' + dayLabel(peruWall(nextVisit.start)) +
-                ' · ' + hm(peruWall(nextVisit.start)), style: const TextStyle(fontSize: 12, color: muted)),
+              Text('${nextVisit.serviceName} · ${dayLabel(peruWall(nextVisit.start))} · ${hm(peruWall(nextVisit.start))}', style: const TextStyle(fontSize: 12, color: muted)),
             ])),
             IconButton(tooltip: 'Ver mis citas', onPressed: () => context.go('/mi-cuenta/citas'),
               icon: const Icon(Icons.arrow_forward, size: 20)),
