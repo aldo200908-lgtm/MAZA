@@ -145,4 +145,13 @@ void main() {
     expect(find.text('Confirmar mi cita'), findsOneWidget);
     expect(find.text('Reserva para Luis Quispe'), findsOneWidget);
   });
+  testWidgets('Inicio vuelve a la portada al tocarlo desde el buscador', (
+    t,
+  ) async {
+    await t.pumpWidget(const MazaApp(demo: true, initialLocation: '/buscar'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Inicio').last);
+    await t.pumpAndSettle();
+    expect(find.text('Tu estilo.\nA tu hora.'), findsOneWidget);
+  });
 }

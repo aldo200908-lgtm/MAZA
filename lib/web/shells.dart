@@ -33,7 +33,7 @@ class PublicShell extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: TextButton(
-          onPressed: () => navigation.goBranch(0),
+          onPressed: () => context.go('/'),
           style: TextButton.styleFrom(foregroundColor: ink),
           child: const Text(
             'MAZA',
@@ -51,7 +51,10 @@ class PublicShell extends StatelessWidget {
               (i) => Padding(
                 padding: const EdgeInsets.only(right: 4),
                 child: TextButton(
-                  onPressed: () => navigation.goBranch(i),
+                  onPressed: () => navigation.goBranch(
+                    i,
+                    initialLocation: i == navigation.currentIndex,
+                  ),
                   style: TextButton.styleFrom(
                     foregroundColor: navigation.currentIndex == i
                         ? orange
@@ -92,7 +95,10 @@ class PublicShell extends StatelessWidget {
           ? null
           : NavigationBar(
               selectedIndex: navigation.currentIndex,
-              onDestinationSelected: (i) => navigation.goBranch(i),
+              onDestinationSelected: (i) => navigation.goBranch(
+                i,
+                initialLocation: i == navigation.currentIndex,
+              ),
               destinations: List.generate(
                 5,
                 (i) => NavigationDestination(
@@ -233,7 +239,10 @@ class AdminShell extends StatelessWidget {
           ? null
           : NavigationBar(
               selectedIndex: navigation.currentIndex,
-              onDestinationSelected: (i) => navigation.goBranch(i),
+              onDestinationSelected: (i) => navigation.goBranch(
+                i,
+                initialLocation: i == navigation.currentIndex,
+              ),
               destinations: const [
                 NavigationDestination(
                   icon: Icon(Icons.dashboard_outlined),

@@ -3,7 +3,7 @@
 Alcance: solo web, dos interfaces separadas (cliente/administración), celular y computadora. La app móvil queda para otro proyecto.
 
 - Flutter 3.35.7, Dart 3.9.2, go_router 16.2.4 y dependencias fijadas en pubspec.lock.
-- `flutter test --dart-define=VISUAL_OUTPUT=/tmp/maza-web-qa`: 29 pruebas correctas; incluye una prueba visual opcional. En CI se omite esa captura y se ejecutan las otras 28.
+- `flutter test --dart-define=VISUAL_OUTPUT=/tmp/maza-web-qa`: 30 pruebas correctas; incluye una prueba visual opcional. En CI se omite esa captura y se ejecutan las otras 29.
 - `flutter analyze`: sin incidencias.
 - Compilación release para GitHub Pages con `/MAZA/`, modo demo explícito y recursos/fuentes locales y `--no-tree-shake-icons` (el optimizador de iconos del SDK falló al leer su artefacto; la compilación Dart se verificó sin ese recorte).
 - PostgreSQL embebido/PGlite: ambas migraciones, semillas, integridad, horarios, exclusión de solapamientos, instantáneas, versiones, RLS, catálogo anónimo sin datos internos, no apropiación de ficha por teléfono y dos clientes con historiales aislados.
