@@ -1,0 +1,41 @@
+name: Compilar MAZA Android
+
+on:
+  push:
+    branches: ['android/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: 'true'
+      FLUTTER_SUPPRESS_ANALYTICS: 'true'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Instalar Flutter 3.35.7
+        run: |
+          git clone --depth 1 --branch 3.35.7 https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+      - run: flutter pub get --enforce-lockfile
+      - run: flutter analyze
+      - run: flutter test
+      - name: Compilar APK conectado
+        run: >-
+          flutter build apk --release --target-platform android-arm64 --no-tree-shake-icons
+          --dart-define-from-file=config/supabase.web.json
+          --dart-define=ANDROID_AUTH_REDIRECT_URL=pe.maza://login-callback
+      - name: Guardar APK de prueba
+        uses: actions/upload-artifact@v4
+        with:
+          name: MAZA-Android
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error

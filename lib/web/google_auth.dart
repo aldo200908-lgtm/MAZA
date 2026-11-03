@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -21,7 +22,9 @@ class GoogleAuth {
       '${const String.fromEnvironment('SUPABASE_URL')}/auth/v1/settings',
     ),
     publishableKey: const String.fromEnvironment('SUPABASE_ANON_KEY'),
-    redirectTo: const String.fromEnvironment('AUTH_REDIRECT_URL'),
+    redirectTo: kIsWeb
+        ? const String.fromEnvironment('AUTH_REDIRECT_URL')
+        : const String.fromEnvironment('ANDROID_AUTH_REDIRECT_URL'),
     launch: (redirect) => client.auth.signInWithOAuth(
       OAuthProvider.google,
       redirectTo: redirect,
@@ -39,21 +42,7 @@ class GoogleAuth {
   Future<void> initialize() async {
     enabled = false;
     returnTo = null;
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_pending);
-    await prefs.remove(_pending);
-    if (raw != null) {
-      try {
-        final data = jsonDecode(raw) as Map<String, dynamic>;
-        final age =
-            DateTime.now().millisecondsSinceEpoch - (data['created'] as int);
-        if (age >= 0 && age < const Duration(minutes: 15).inMilliseconds) {
-          returnTo = safeDestination(data['path'] as String?);
-        }
-      } catch (_) {
-        /* Un intento antiguo no impide entrar por correo. */
-      }
-    }
+    await restoreReturnDestination();
     final transport = httpClient ?? http.Client();
     try {
       if (!settingsUri.hasAuthority ||
@@ -72,6 +61,25 @@ class GoogleAuth {
       enabled = false;
     } finally {
       if (httpClient == null) transport.close();
+    }
+  }
+
+  Future<void> restoreReturnDestination() async {
+    returnTo = null;
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_pending);
+    await prefs.remove(_pending);
+    if (raw != null) {
+      try {
+        final data = jsonDecode(raw) as Map<String, dynamic>;
+        final age =
+            DateTime.now().millisecondsSinceEpoch - (data['created'] as int);
+        if (age >= 0 && age < const Duration(minutes: 15).inMilliseconds) {
+          returnTo = safeDestination(data['path'] as String?);
+        }
+      } catch (_) {
+        /* Un intento antiguo no impide entrar por correo. */
+      }
     }
   }
 

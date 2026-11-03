@@ -55,6 +55,7 @@ class WebController extends ChangeNotifier {
   StreamSubscription<AuthState>? _auth;
   Future<void>? _adminLoading;
   bool get signedIn => gateway.hasSession;
+  bool nativeOAuthReturn = false;
   void _publish() {
     if (!_disposed) notifyListeners();
   }
@@ -84,6 +85,7 @@ class WebController extends ChangeNotifier {
       }
       await refreshIdentity();
       if (!demo) {
+        nativeOAuthReturn = !kIsWeb && signedIn && oauthReturnTo != null;
         _auth = Supabase.instance.client.auth.onAuthStateChange.listen((event) {
           if (event.event == AuthChangeEvent.passwordRecovery) {
             recovering = true;
@@ -91,7 +93,7 @@ class WebController extends ChangeNotifier {
           }
           if (event.event != AuthChangeEvent.initialSession) {
             unawaited(
-              refreshIdentity().catchError((Object e) {
+              _refreshAuthEvent(event.event).catchError((Object e) {
                 if (!_disposed) {
                   adminAllowed = false;
                   customer = null;
@@ -114,6 +116,23 @@ class WebController extends ChangeNotifier {
           'No pudimos cargar MAZA. Revisa tu conexión e inténtalo de nuevo.';
     } finally {
       loading = false;
+      _publish();
+    }
+  }
+
+  Future<void> _refreshAuthEvent(AuthChangeEvent event) async {
+    final currentGateway = gateway;
+    if (!kIsWeb &&
+        event == AuthChangeEvent.signedIn &&
+        currentGateway is SupabaseCustomerGateway) {
+      await currentGateway.google.restoreReturnDestination();
+    }
+    await refreshIdentity();
+    if (!kIsWeb &&
+        event == AuthChangeEvent.signedIn &&
+        signedIn &&
+        oauthReturnTo != null) {
+      nativeOAuthReturn = true;
       _publish();
     }
   }
