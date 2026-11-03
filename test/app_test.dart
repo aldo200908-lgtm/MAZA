@@ -6,42 +6,38 @@ import 'package:maza/app.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
-  testWidgets('demo navega por módulos sin credenciales', (tester) async {
-    await tester.pumpWidget(const MazaApp(demo: true));
-    await tester.pumpAndSettle();
-    expect(find.text('MAZA'), findsWidgets);
-    await tester.ensureVisible(find.text('Explorar demo'));
-    await tester.tap(find.text('Explorar demo'));
-    await tester.pumpAndSettle();
-    expect(find.text('Tu día, en orden.'), findsOneWidget);
-    await tester.tap(find.text('Citas').last);
-    await tester.pumpAndSettle();
-    expect(find.text('Tu agenda'), findsOneWidget);
-    await tester.tap(find.text('Barbería').last);
-    await tester.pumpAndSettle();
-    expect(find.text('Corte clásico'), findsOneWidget);
-    await tester.tap(find.text('Más').last);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Stock de belleza'));
-    await tester.pumpAndSettle();
-    expect(find.text('Próximamente'), findsOneWidget);
-    expect(tester.takeException(), isNull);
+  testWidgets('la web abre públicamente y separa sus cinco destinos', (
+    t,
+  ) async {
+    await t.pumpWidget(const MazaApp(demo: true));
+    await t.pumpAndSettle();
+    expect(find.text('Tu estilo.\nA tu hora.'), findsOneWidget);
+    expect(find.text('Luis Quispe'), findsNothing);
+    await t.tap(find.text('Productos').last);
+    await t.pumpAndSettle();
+    expect(find.text('Pomada mate'), findsOneWidget);
+    await t.tap(find.text('Alquileres').last);
+    await t.pumpAndSettle();
+    expect(find.text('Sillón de barbería'), findsOneWidget);
+    await t.tap(find.text('Cuenta').last);
+    await t.pumpAndSettle();
+    expect(find.text('Cuenta de ejemplo'), findsOneWidget);
   });
-  testWidgets('pantalla pequeña y texto ampliado no desbordan', (tester) async {
-    tester.view.physicalSize = const Size(360, 800);
-    tester.view.devicePixelRatio = 1;
-    tester.platformDispatcher.textScaleFactorTestValue = 1.3;
-    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    await tester.pumpWidget(const MazaApp(demo: true));
-    await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Explorar demo'));
-    await tester.tap(find.text('Explorar demo'));
-    await tester.pumpAndSettle();
-    expect(tester.takeException(), isNull);
-    await tester.tap(find.text('Citas').last);
-    await tester.pumpAndSettle();
-    expect(tester.takeException(), isNull);
+  testWidgets('360px y texto al 130% no desbordan', (t) async {
+    t.view.physicalSize = const Size(360, 800);
+    t.view.devicePixelRatio = 1;
+    t.platformDispatcher.textScaleFactorTestValue = 1.3;
+    addTearDown(t.view.resetPhysicalSize);
+    addTearDown(t.view.resetDevicePixelRatio);
+    addTearDown(t.platformDispatcher.clearTextScaleFactorTestValue);
+    await t.pumpWidget(const MazaApp(demo: true));
+    await t.pumpAndSettle();
+    expect(t.takeException(), isNull);
+    for (final text in ['Reservar', 'Productos', 'Alquileres', 'Cuenta']) {
+      await t.tap(find.text(text).last);
+      await t.pumpAndSettle();
+      expect(t.takeException(), isNull);
+      if (text == 'Cuenta') break;
+    }
   });
 }

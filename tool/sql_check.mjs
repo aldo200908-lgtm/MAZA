@@ -15,4 +15,7 @@ try {
  await db.exec(fs.readFileSync(root+'supabase/seed_demo.sql','utf8')); console.log('Seed OK');
  await db.exec(fs.readFileSync(root+'supabase/tests/invariants.sql','utf8')); console.log('Horarios, conflictos e historial OK');
  await db.exec(fs.readFileSync(root+'supabase/tests/access.sql','utf8')); console.log('RLS admin/ajeno y permisos módulos futuros OK');
+ await db.exec(fs.readFileSync(root+'supabase/migrations/002_customer_web.sql','utf8'));console.log('Migración Web OK');
+ await db.exec(fs.readFileSync(root+'supabase/seed_web.sql','utf8'));
+ await db.exec(fs.readFileSync(root+'supabase/tests/customer_web.sql','utf8'));console.log('Catálogo público y clientes aislados OK');
 } catch(e){console.error(e.message); console.error('code',e.code);process.exitCode=1;}finally{await db.close();}

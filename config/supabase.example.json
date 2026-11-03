@@ -2,5 +2,5 @@
   "DEMO_MODE": "false",
   "SUPABASE_URL": "https://TU_PROYECTO.supabase.co",
   "SUPABASE_ANON_KEY": "TU_CLAVE_PUBLICA_ANON",
-  "AUTH_REDIRECT_URL": "pe.maza://login-callback/"
+  "AUTH_REDIRECT_URL": "https://aldo200908-lgtm.github.io/MAZA/"
 }

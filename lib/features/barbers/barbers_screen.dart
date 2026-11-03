@@ -7,8 +7,9 @@ import '../../core/widgets.dart';
 import '../clients/clients_screen.dart';
 
 class BarbersScreen extends StatefulWidget {
-  const BarbersScreen({super.key, required this.store});
+  const BarbersScreen({super.key, required this.store, this.onClients});
   final AppStore store;
+  final VoidCallback? onClients;
   @override
   State<BarbersScreen> createState() => _BarbersScreenState();
 }
@@ -25,12 +26,14 @@ class _BarbersScreenState extends State<BarbersScreen> {
       Surface(
         color: const Color(0xFFECEFE4),
         child: InkWell(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute<void>(
-              builder: (_) => ClientsScreen(store: widget.store),
-            ),
-          ),
+          onTap:
+              widget.onClients ??
+              () => Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (_) => ClientsScreen(store: widget.store),
+                ),
+              ),
           child: Row(
             children: [
               const Icon(Icons.people_outline, size: 26),

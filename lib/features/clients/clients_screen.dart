@@ -7,8 +7,9 @@ import '../../core/widgets.dart';
 import '../appointments/appointment_editor.dart';
 
 class ClientsScreen extends StatefulWidget {
-  const ClientsScreen({super.key, required this.store});
+  const ClientsScreen({super.key, required this.store, this.onOpen});
   final AppStore store;
+  final void Function(String id)? onOpen;
   @override
   State<ClientsScreen> createState() => _ClientsScreenState();
 }
@@ -82,15 +83,17 @@ class _ClientsScreenState extends State<ClientsScreen> {
                       ),
                       subtitle: Text(c.phone),
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder: (_) => ClientHistoryScreen(
-                            store: widget.store,
-                            clientId: c.id,
-                          ),
-                        ),
-                      ),
+                      onTap: () => widget.onOpen != null
+                          ? widget.onOpen!(c.id)
+                          : Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (_) => ClientHistoryScreen(
+                                  store: widget.store,
+                                  clientId: c.id,
+                                ),
+                              ),
+                            ),
                     ),
                   ),
                 ),

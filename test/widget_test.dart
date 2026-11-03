@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:maza/app.dart';
 import 'package:maza/core/clock.dart';
 import 'package:maza/core/models.dart';
 import 'package:maza/core/store.dart';
@@ -12,27 +11,6 @@ import 'package:maza/features/appointments/appointment_editor.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
-  testWidgets('cerrar sesión elimina las rutas privadas de clientes', (
-    t,
-  ) async {
-    await t.pumpWidget(const MazaApp(demo: true));
-    await t.pumpAndSettle();
-    await t.ensureVisible(find.text('Explorar demo'));
-    await t.tap(find.text('Explorar demo'));
-    await t.pumpAndSettle();
-    await t.tap(find.text('Más').last);
-    await t.pumpAndSettle();
-    await t.tap(find.text('Clientes e historial'));
-    await t.pumpAndSettle();
-    expect(find.text('Luis Quispe'), findsOneWidget);
-    final shell = t.widget<MazaShell>(
-      find.byType(MazaShell, skipOffstage: false),
-    );
-    await shell.onExit();
-    await t.pumpAndSettle();
-    expect(find.text('Luis Quispe'), findsNothing);
-    expect(find.text('Explorar demo'), findsOneWidget);
-  });
   testWidgets('una cita se crea desde el formulario con el horario elegido', (
     t,
   ) async {

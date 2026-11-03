@@ -59,3 +59,13 @@ Las tablas futuras no admiten escrituras del rol `authenticated`; por eso sus re
 - `invariants.sql`: solapamiento, turno contiguo, horario, instantánea histórica, versión y sesión obsoleta.
 - `access.sql`: usuario ajeno sin lectura/escritura, administrador autorizado y prohibición de modificar permisos/módulos futuros.
 - `tool/sql_check.mjs`: ejecuta migración/seed/pruebas en PostgreSQL embebido; prepara un `auth` mínimo exclusivamente en memoria.
+
+## Ampliación Web v2
+
+`002_customer_web.sql` añade vínculo único `clients.auth_user_id`, datos públicos de negocio y fichas descriptivas de catálogo. `customer_requests` representa consultas de producto o alquiler con claves foráneas tipadas, instantánea de artículo/importe y estado pendiente/atendida/no disponible; no representa un cobro ni un contrato confirmado.
+
+Los clientes usan funciones RPC con propiedad explícita por `auth.uid()`. No se amplía la lectura directa de clientes/citas: sus notas internas siguen restringidas al administrador. Solo `web_catalog` y `web_slots` se conceden a `anon`. Se revoca EXECUTE de PUBLIC en las funciones web. Las funciones se ejecutan con search_path fijado y no aceptan identidad del cliente en los parámetros.
+
+La reprogramación usa la duración original, incluso si cambia el catálogo, y solo admite el mismo barbero. Una sesión obsoleta, una cita ajena, completada, cancelada o pasada no puede modificarse por el cliente.
+
+Pendiente antes de operar stock/alquileres completos: edición de catálogo, funciones de movimientos y saldo, contratos, entrega/devolución y garantías. La web permite enviar y atender solicitudes sin habilitar esas operaciones ni pagos.

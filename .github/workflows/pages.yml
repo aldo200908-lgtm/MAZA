@@ -43,7 +43,7 @@ jobs:
         env:
           PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
         run: >-
-          flutter build web --release --no-web-resources-cdn
+          flutter build web --release --no-web-resources-cdn --no-tree-shake-icons
           --base-href "${PAGES_BASE_PATH}/"
           --dart-define=DEMO_MODE=true
       - name: Preparar artefacto web
