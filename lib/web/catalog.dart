@@ -71,7 +71,7 @@ class PublicCatalog {
         .map((x) => ShopItem.fromJson(Map<String, dynamic>.from(x)))
         .toList(),
     business: j['business'] == null
-        ? const BusinessInfo()
+        ? const BusinessInfo(address: 'Puno, Perú · dirección por confirmar')
         : BusinessInfo.fromJson(Map<String, dynamic>.from(j['business'])),
   );
 }

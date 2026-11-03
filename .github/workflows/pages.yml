@@ -1,4 +1,4 @@
-name: Publicar demo MAZA
+name: Publicar MAZA Web
 
 on:
   push:
@@ -39,13 +39,18 @@ jobs:
         run: flutter analyze
       - name: Probar módulos
         run: flutter test
-      - name: Compilar demo web
+      - name: Verificar esquema y permisos SQL
+        working-directory: tool
+        run: |
+          npm ci
+          npm run check:sql
+      - name: Compilar web conectada
         env:
           PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
         run: >-
           flutter build web --release --no-web-resources-cdn --no-tree-shake-icons
           --base-href "${PAGES_BASE_PATH}/"
-          --dart-define=DEMO_MODE=true
+          --dart-define-from-file=config/supabase.web.json
       - name: Preparar artefacto web
         uses: actions/upload-pages-artifact@v4
         with:

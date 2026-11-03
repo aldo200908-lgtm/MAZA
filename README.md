@@ -2,7 +2,9 @@
 
 Web Flutter con dos caras independientes: clientes y administración. Esta entrega se centra **solo en la web**, adaptable a celular y computadora. La futura app móvil se construirá aparte; no se ha cambiado ni compilado Android en esta versión.
 
-Demo publicada: https://aldo200908-lgtm.github.io/MAZA/
+Web: https://aldo200908-lgtm.github.io/MAZA/
+
+La publicación usa el proyecto Supabase MAZA. Las credenciales públicas de compilación están en `config/supabase.web.json`; no contiene contraseñas ni claves secretas. La confirmación de correo y la activación del propietario se describen en `docs/supabase-setup.md`. El catálogo conectado empieza vacío; los seeds de demostración no se ejecutan en producción.
 
 ## Área pública
 
@@ -52,13 +54,13 @@ Las barras de cliente y administrador pertenecen a dos `StatefulShellRoute.index
 
 ## Conectar Supabase real
 
-No se ha creado ni conectado un proyecto Supabase del usuario. El despliegue actual es demo. Para un proyecto nuevo:
+Para reproducir la instalación en otro proyecto nuevo:
 
 1. Ejecutar `supabase/migrations/001_maza.sql` y después `002_customer_web.sql` en SQL Editor.
 2. Crear el administrador desde Authentication → Users, copiar su UUID en `supabase/bootstrap.sql` y ejecutar ese bloque una vez. Existe un solo administrador.
 3. Para probar con datos ficticios, ejecutar `supabase/seed_demo.sql` y luego `supabase/seed_web.sql`. Nunca ejecutar los seeds sobre datos reales.
 4. Permitir registro por correo para clientes en Supabase Auth y configurar la confirmación por correo. El administrador sigue asignándose exclusivamente por SQL. Crear una cuenta cliente nunca concede administración.
-5. Copiar `config/supabase.example.json` a `config/supabase.json`, completar URL y clave **pública anon**, establecer `DEMO_MODE=false` y `AUTH_REDIRECT_URL` a la URL web raíz donde se sirve MAZA. Añadir esa URL exacta a Auth → URL Configuration y configurar Site URL.
+5. Copiar `config/supabase.example.json` a `config/supabase.json`, completar URL y clave **publishable pública**, establecer `DEMO_MODE=false` y `AUTH_REDIRECT_URL` a la URL web raíz donde se sirve MAZA. Añadir esa URL exacta a Auth → URL Configuration y configurar Site URL. `SUPABASE_ANON_KEY` conserva su nombre por compatibilidad y admite la clave publishable.
 6. No usar claves `service_role` ni claves secretas en Flutter. Los archivos reales de configuración están excluidos de git.
 
 ```bash
@@ -116,7 +118,7 @@ npm install
 npm run check:sql
 ```
 
-La prueba SQL usa PostgreSQL embebido/PGlite y un `auth` mínimo, sin credenciales ni servicios externos. También se entregan los SQL de prueba para un proyecto de ensayo. Falta verificar acceso/registro/correo contra el Supabase real del usuario.
+La prueba SQL usa PostgreSQL embebido/PGlite y un `auth` mínimo, sin credenciales ni servicios externos. También se entregan los SQL de prueba para un proyecto de ensayo. El alta y la confirmación por correo del propietario se completan personalmente; nunca se solicita su contraseña por chat.
 
 GitHub Actions verifica análisis y pruebas, compila solo web y despliega en Pages desde `main`. No hay creación de APK, pasarela de pago ni publicación en tiendas. El directorio Android anterior se conserva como antecedente de v1 y está fuera del alcance de esta entrega.
 

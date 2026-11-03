@@ -308,7 +308,12 @@ class SupabaseCustomerGateway implements CustomerGateway {
 
   @override
   Future<String?> register(String email, String password) async {
-    final r = await client.auth.signUp(email: email.trim(), password: password);
+    const redirect = String.fromEnvironment('AUTH_REDIRECT_URL');
+    final r = await client.auth.signUp(
+      email: email.trim(),
+      password: password,
+      emailRedirectTo: redirect.isEmpty ? null : redirect,
+    );
     return r.session == null
         ? 'Revisa tu correo y confirma tu cuenta antes de ingresar.'
         : null;
