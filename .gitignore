@@ -11,3 +11,5 @@ android/.gradle/
 *.iml
 .idea/
 node_modules/
+
+supabase/.temp/

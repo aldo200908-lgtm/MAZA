@@ -8,6 +8,15 @@ import 'theme.dart';
 String friendlyError(Object error) {
   if (error is DomainError) return error.message;
   if (error is AuthException) {
+    if (error.code == 'email_not_confirmed') {
+      return 'Confirma tu correo antes de ingresar. Revisa también la carpeta de spam.';
+    }
+    if (error.code == 'invalid_credentials') {
+      return 'El correo o la contraseña no coinciden. Si ya confirmaste tu cuenta, usa Recuperar contraseña.';
+    }
+    if (error.code == 'over_email_send_rate_limit') {
+      return 'Se enviaron varios correos seguidos. Espera unos minutos antes de solicitar otro.';
+    }
     return 'No se pudo completar el acceso. Revisa tus datos o solicita recuperar la contraseña.';
   }
   if (error is PostgrestException) {

@@ -14,7 +14,7 @@ class AdminDashboard extends StatelessWidget {
   final WebController controller;
   @override
   Widget build(BuildContext context) {
-    if (controller.demo) return StudioOverview(controller: controller);
+    if (controller.operations != null) return StudioOverview(controller: controller);
     final store = controller.adminStore;
     final today = store.forDay(peruNow());
     final pending = today

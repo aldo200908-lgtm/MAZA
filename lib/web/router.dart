@@ -306,19 +306,15 @@ GoRouter createWebRouter(WebController c, {String? initialLocation}) {
               ),
               GoRoute(
                 path: '/admin/pagos',
-                builder: (ctx, s) => page(() => c.demo ? StudioPayments(controller: c) : const AdminPayments()),
+                builder: (ctx, s) => page(() => StudioPayments(controller: c)),
               ),
               GoRoute(
                 path: '/admin/reportes',
-                builder: (ctx, s) => page(() => c.demo
-                  ? StudioReports(controller: c)
-                  : const WebPage(children: [Intro('Reportes', 'Disponible en la vista de diseño.')])),
+                builder: (ctx, s) => page(() => StudioReports(controller: c)),
               ),
               GoRoute(
                 path: '/admin/avisos',
-                builder: (ctx, s) => page(() => c.demo
-                  ? StudioNotices(controller: c)
-                  : const WebPage(children: [Intro('Avisos', 'No hay avisos por ahora.')])),
+                builder: (ctx, s) => page(() => StudioNotices(controller: c)),
               ),
               GoRoute(
                 path: '/admin/configuracion',

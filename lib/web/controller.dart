@@ -6,6 +6,7 @@ import '../core/store.dart';
 import '../data/demo_repository.dart';
 import '../data/supabase_repository.dart';
 import '../features/admin/design_store.dart';
+import '../features/admin/supabase_operations.dart';
 import 'catalog.dart';
 import 'gateway.dart';
 
@@ -14,6 +15,7 @@ class WebController extends ChangeNotifier {
     required this.demo,
     CustomerGateway? customerGateway,
     AppStore? store,
+    DesignOperations? adminOperations,
   }) {
     adminStore =
         store ??
@@ -22,7 +24,11 @@ class WebController extends ChangeNotifier {
               ? DemoRepository()
               : SupabaseRepository(Supabase.instance.client),
         );
-    operations = demo ? DesignOperations() : null;
+    operations =
+        adminOperations ??
+        (demo
+            ? DesignOperations()
+            : SupabaseOperations(Supabase.instance.client));
     operations?.addListener(_operationsChanged);
     gateway =
         customerGateway ??
@@ -58,7 +64,10 @@ class WebController extends ChangeNotifier {
     error = null;
     _publish();
     try {
-      if (demo) await adminStore.load();
+      if (demo) {
+        await adminStore.load();
+        operations!.clients = adminStore.clients;
+      }
       await gateway.initialize();
       if (demo && const bool.fromEnvironment('DESIGN_PREVIEW')) {
         adminAllowed = true;
@@ -80,6 +89,9 @@ class WebController extends ChangeNotifier {
                   customer = null;
                   appointments = [];
                   requests = [];
+                  managementRequests = [];
+                  operations?.clear();
+                  adminStore.clear();
                   syncNotice =
                       'No pudimos actualizar tu sesión. Ingresa de nuevo.';
                   _publish();
@@ -105,6 +117,8 @@ class WebController extends ChangeNotifier {
       if (id != _authId) {
         _authId = id;
         adminAllowed = false;
+        operations?.clear();
+        adminStore.clear();
         customer = null;
         appointments = [];
         requests = [];
@@ -132,9 +146,15 @@ class WebController extends ChangeNotifier {
           : <CustomerRequest>[];
       if (_disposed || generation != _identity) return;
       if (admin && !demo && reloadAdmin) {
-        await (_adminLoading ??= adminStore.load().whenComplete(
-          () => _adminLoading = null,
-        ));
+        await (_adminLoading ??= Future<void>(() async {
+          await adminStore.load();
+          operations!.clients = adminStore.clients;
+          await operations!.load();
+        }).whenComplete(() => _adminLoading = null));
+      }
+      if (admin && !demo && !reloadAdmin) {
+        operations!.clients = adminStore.clients;
+        await operations!.load();
       }
       if (_disposed || generation != _identity) return;
       adminAllowed = admin;
@@ -153,9 +173,17 @@ class WebController extends ChangeNotifier {
   void _operationsChanged() {
     final old = catalog;
     if (old == null || _disposed || operations == null) return;
-    catalog = PublicCatalog(services: old.services, barbers: old.barbers,
-      products: operations!.products, rentals: operations!.rentalItems,
-      business: old.business);
+    if (!demo && !adminAllowed) {
+      _publish();
+      return;
+    }
+    catalog = PublicCatalog(
+      services: old.services,
+      barbers: old.barbers,
+      products: List.of(operations!.products),
+      rentals: List.of(operations!.rentalItems),
+      business: old.business,
+    );
     _publish();
   }
 
@@ -210,6 +238,10 @@ class WebController extends ChangeNotifier {
     appointments = [];
     requests = [];
     managementRequests = [];
+    if (!demo) {
+      operations?.clear();
+      adminStore.clear();
+    }
     _publish();
     await gateway.signOut();
     await refreshIdentity();
@@ -281,7 +313,11 @@ class WebController extends ChangeNotifier {
     if (!adminAllowed) {
       throw const DomainError('Acceso exclusivo del administrador.');
     }
-    await gateway.resolveRequest(request, status);
+    if (!demo && status == 'handled') {
+      await operations!.fulfill(request, key: request.id);
+    } else {
+      await gateway.resolveRequest(request, status);
+    }
     managementRequests = managementRequests
         .map((x) => x.id == request.id ? x.copyStatus(status) : x)
         .toList();

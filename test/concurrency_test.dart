@@ -14,6 +14,21 @@ class DelayedRepository extends DemoRepository {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   test(
+    'limpiar la sesión descarta una carga administrativa en vuelo',
+    () async {
+      final repo = DelayedRepository();
+      repo.delayed = Completer<DataSnapshot>();
+      final store = AppStore(repo);
+      final load = store.load();
+      store.clear();
+      repo.delayed!.complete(seedDemo());
+      await load;
+      expect(store.clients, isEmpty);
+      expect(store.appointments, isEmpty);
+      store.dispose();
+    },
+  );
+  test(
     'una actualización pendiente no puede pisar una escritura nueva',
     () async {
       SharedPreferences.setMockInitialValues({});

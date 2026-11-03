@@ -102,7 +102,7 @@ class AdminCatalog extends StatelessWidget {
   final bool rentals;
   @override
   Widget build(BuildContext context) {
-    if (controller.demo) return StudioInventory(controller: controller, rentals: rentals);
+    if (controller.operations != null) return StudioInventory(controller: controller, rentals: rentals);
     final items = rentals
         ? controller.catalog!.rentals
         : controller.catalog!.products;

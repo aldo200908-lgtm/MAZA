@@ -16,6 +16,15 @@ class AppStore extends ChangeNotifier {
   List<Barber> get barbers => List.unmodifiable(_barbers);
   List<Client> get clients => List.unmodifiable(_clients);
   List<Appointment> get appointments => List.unmodifiable(_appointments);
+  int _epoch = 0;
+  void clear() {
+    _epoch++;
+    _services = [];
+    _barbers = [];
+    _clients = [];
+    _appointments = [];
+  }
+
   bool _writing = false;
   bool _loading = false;
   Future<void> load() async {
@@ -23,8 +32,10 @@ class AppStore extends ChangeNotifier {
       throw const DomainError('Hay una operación en curso. Espera un momento.');
     }
     _loading = true;
+    final epoch = _epoch;
     try {
       final d = await repository.load();
+      if (epoch != _epoch) return;
       _services = d.services;
       _barbers = d.barbers;
       _clients = d.clients;
@@ -100,8 +111,13 @@ class AppStore extends ChangeNotifier {
       throw const DomainError('Hay un cambio en curso. Espera un momento.');
     }
     _writing = true;
+    final epoch = _epoch;
     try {
       final result = await action();
+      if (epoch != _epoch) {
+        clear();
+        throw const DomainError('Tu sesión cambió. Ingresa de nuevo.');
+      }
       notifyListeners();
       return result;
     } finally {

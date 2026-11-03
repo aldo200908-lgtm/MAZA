@@ -12,6 +12,7 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 try {
  await db.exec(fs.readFileSync(root+'supabase/migrations/001_maza.sql','utf8')); console.log('Migración SQL OK');
  await db.exec(fs.readFileSync(root+'supabase/migrations/002_customer_web.sql','utf8'));console.log('Migración Web OK');
+ await db.exec(fs.readFileSync(root+'supabase/migrations/20261103170352_admin_operations.sql','utf8'));console.log('Migración operativa OK');
  await db.exec(fs.readFileSync(root+'supabase/owner_setup.sql','utf8'));
  await db.exec(fs.readFileSync(root+'supabase/tests/owner_setup.sql','utf8'));console.log('Activación exclusiva de propietario verificado OK');
  await db.exec(`insert into public.app_admin(user_id) values('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa');`);
@@ -20,4 +21,5 @@ try {
  await db.exec(fs.readFileSync(root+'supabase/tests/access.sql','utf8')); console.log('RLS admin/ajeno y permisos módulos futuros OK');
  await db.exec(fs.readFileSync(root+'supabase/seed_web.sql','utf8'));
  await db.exec(fs.readFileSync(root+'supabase/tests/customer_web.sql','utf8'));console.log('Catálogo público y clientes aislados OK');
+ await db.exec(fs.readFileSync(root+'supabase/tests/operations.sql','utf8'));console.log('Operaciones administrativas e idempotencia OK');
 } catch(e){console.error(e.message); console.error('code',e.code);process.exitCode=1;}finally{await db.close();}
