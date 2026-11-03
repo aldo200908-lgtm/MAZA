@@ -35,7 +35,12 @@ String safeDestination(String? raw, {String fallback = '/mi-cuenta'}) {
       raw.startsWith('//') ||
       uri.hasScheme ||
       uri.hasAuthority ||
-      ['/acceso', '/admin/acceso', '/recuperar'].contains(uri.path)) {
+      [
+        '/acceso',
+        '/admin/acceso',
+        '/recuperar',
+        '/auth/retorno',
+      ].contains(uri.path)) {
     return fallback;
   }
   return uri.toString();

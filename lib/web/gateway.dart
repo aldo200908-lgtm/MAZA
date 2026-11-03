@@ -6,9 +6,13 @@ import '../features/admin/design_store.dart';
 import '../core/models.dart';
 import '../core/store.dart';
 import 'catalog.dart';
+import 'facebook_auth.dart';
 
 abstract interface class CustomerGateway {
   bool get hasSession;
+  bool get facebookEnabled;
+  String? get oauthReturnTo;
+  Future<void> signInWithFacebook(String destination);
   Future<void> initialize();
   Future<void> signIn(String email, String password);
   Future<String?> register(String email, String password);
@@ -44,9 +48,16 @@ abstract interface class CustomerGateway {
 
 class DemoCustomerGateway implements CustomerGateway {
   DemoCustomerGateway(this.store, {DesignOperations? operations})
-      : operations = operations ?? DesignOperations();
+    : operations = operations ?? DesignOperations();
   final AppStore store;
   final DesignOperations operations;
+  @override
+  bool get facebookEnabled => false;
+  @override
+  String? get oauthReturnTo => null;
+  @override
+  Future<void> signInWithFacebook(String destination) async =>
+      throw const DomainError('Facebook no se conecta en la demostración.');
   late SharedPreferences prefs;
   bool _signedIn = false;
   static const customerId = '30000000-0000-4000-8000-000000000001';
@@ -295,12 +306,21 @@ class DemoCustomerGateway implements CustomerGateway {
 }
 
 class SupabaseCustomerGateway implements CustomerGateway {
-  SupabaseCustomerGateway(this.client);
+  SupabaseCustomerGateway(this.client, {FacebookAuth? facebookAuth})
+    : facebook = facebookAuth ?? FacebookAuth.forClient(client);
+  final FacebookAuth facebook;
+  @override
+  bool get facebookEnabled => facebook.enabled;
+  @override
+  String? get oauthReturnTo => facebook.returnTo;
+  @override
+  Future<void> signInWithFacebook(String destination) =>
+      facebook.signIn(destination);
   final SupabaseClient client;
   @override
   bool get hasSession => client.auth.currentSession != null;
   @override
-  Future<void> initialize() async {}
+  Future<void> initialize() => facebook.initialize();
   @override
   Future<void> signIn(String email, String password) async {
     await client.auth.signInWithPassword(

@@ -76,6 +76,26 @@ class _WebAccessState extends State<WebAccess> {
     }
   }
 
+  Future<void> _facebook() async {
+    setState(() {
+      busy = true;
+      error = null;
+      message = null;
+    });
+    try {
+      await widget.controller.loginWithFacebook(
+        safeDestination(
+          widget.returnTo,
+          fallback: widget.admin ? '/admin' : '/mi-cuenta',
+        ),
+      );
+    } catch (e) {
+      if (mounted) setState(() => error = friendlyError(e));
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
@@ -145,6 +165,34 @@ class _WebAccessState extends State<WebAccess> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                if (widget.controller.gateway.facebookEnabled) ...[
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: busy ? null : _facebook,
+                      icon: const Icon(
+                        Icons.facebook,
+                        color: Color(0xFF1877F2),
+                      ),
+                      label: const Text('Continuar con Facebook'),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Row(
+                    children: [
+                      Expanded(child: Divider()),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          'o con tu correo',
+                          style: TextStyle(color: muted),
+                        ),
+                      ),
+                      Expanded(child: Divider()),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 TextFormField(
                   controller: email,
                   keyboardType: TextInputType.emailAddress,
@@ -336,14 +384,27 @@ class _AccountPageState extends State<AccountPage> {
               style: TextStyle(fontSize: 12, color: muted),
             ),
           ),
-        Wrap(spacing: 8, runSpacing: 8, children: [
-          ActionChip(avatar: const Icon(Icons.event_outlined, size: 17), label: const Text('Mis visitas'),
-            onPressed: () => context.go('/mi-cuenta/citas')),
-          ActionChip(avatar: const Icon(Icons.shopping_bag_outlined, size: 17), label: const Text('Mis solicitudes'),
-            onPressed: () => context.go('/mi-cuenta/solicitudes')),
-          ActionChip(avatar: const Icon(Icons.person_outline, size: 17), label: const Text('Mi cuenta'),
-            onPressed: () => context.go('/mi-cuenta')),
-        ]),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            ActionChip(
+              avatar: const Icon(Icons.event_outlined, size: 17),
+              label: const Text('Mis visitas'),
+              onPressed: () => context.go('/mi-cuenta/citas'),
+            ),
+            ActionChip(
+              avatar: const Icon(Icons.shopping_bag_outlined, size: 17),
+              label: const Text('Mis solicitudes'),
+              onPressed: () => context.go('/mi-cuenta/solicitudes'),
+            ),
+            ActionChip(
+              avatar: const Icon(Icons.person_outline, size: 17),
+              label: const Text('Mi cuenta'),
+              onPressed: () => context.go('/mi-cuenta'),
+            ),
+          ],
+        ),
         const SizedBox(height: 20),
         if (widget.returnTo != null && p != null)
           Padding(

@@ -41,11 +41,15 @@ GoRouter createWebRouter(WebController c, {String? initialLocation}) {
       if (c.recovering && path != '/recuperar') return '/recuperar';
       if (path == '/auth/retorno') {
         if (c.identityLoading) return null;
-        return c.adminAllowed
-            ? '/admin'
-            : c.signedIn
-            ? '/mi-cuenta'
-            : '/acceso';
+        if (!c.signedIn) return '/acceso';
+        final next = safeDestination(
+          c.oauthReturnTo,
+          fallback: c.adminAllowed ? '/admin' : '/mi-cuenta',
+        );
+        if ((next == '/admin' || next.startsWith('/admin/')) && !c.adminAllowed) {
+          return '/mi-cuenta';
+        }
+        return next;
       }
       if (path == '/recuperar' && !c.signedIn) return '/acceso';
       final adminPath = path == '/admin' || path.startsWith('/admin/');

@@ -139,3 +139,7 @@ En `/MAZA/demo/` se abre el panel sin login, exclusivamente con datos ficticios.
 5. Antes de abrir el registro a clientes externos, configurar SMTP propio en Supabase Auth, Site URL y Redirect URL exactas `https://aldo200908-lgtm.github.io/MAZA/`. El envío de correos públicos y la recuperación deben comprobarse con el titular; el proveedor de correo predeterminado tiene restricciones. No desactivar la confirmación para esquivar esa configuración.
 
 Pendiente de validación personal: contraseña del administrador, recepción de correos externos y catálogo/dirección definitivos. No se debe anunciar la puesta en producción completa hasta cerrar esas comprobaciones. No hay pasarela bancaria, facturación electrónica, control de devolución de garantías ni recordatorios enviados. Una solicitud pública queda por confirmar hasta que el administrador registra la venta o reserva.
+
+## Inicio con Facebook
+
+Integración preparada en `lib/web/facebook_auth.dart`, con botón condicionado al proveedor habilitado en Supabase y retorno a la reserva elegida. Requiere configurar la app de Meta y sus credenciales en Supabase; no hay secretos de Meta en el frontend. Instrucciones: [Activar Facebook](docs/entrega/facebook.md). El acceso social conserva los permisos existentes y no concede administración.
